@@ -15,7 +15,6 @@ mod_step5_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # Final processed donor-level result table
     processed_data <- reactiveVal(
       data.frame(Donor_ID = character(), Model = character(), PC1_Score = numeric(), ES = numeric())
     )
@@ -39,94 +38,65 @@ mod_step5_server <- function(
       }
     })
 
-    # Render table
+    # Render result table
     output$processed_results <- renderDT({
       datatable(processed_data(), options = list(scrollX = TRUE))
     })
 
-    # Main logic
+    # Main processing
     observeEvent(input$start_processing, {
       req(colData(), countData())
 
       selected_gmt <- if (input$gene_set_choice == "symbol") gmt_data_symbol else gmt_data
-      current_type <- expr_type()
-
-      # Step 1: Determine normalization method and apply normalization
-      normalized_data <- NULL
-
-      withProgress(message = "Preprocessing Expression Data", value = 0.3, {
-        if (current_type %in% c("TPM", "FPKM")) {
-          normalized_data <- countData()
-        } else {
-          method <- input$normalization_method
-          normalized_data <- if (method == "TPM") {
-            calculate_tpm(countData(), gene_lengths)
-          } else {
-            calculate_fpkm(countData(), gene_lengths)
-          }
-        }
-
-        # Step 2: Filter low-expression genes (based on global Q1)
-        all_values <- unlist(normalized_data)
-        global_q1 <- quantile(all_values[all_values > 0], probs = 0.25, na.rm = TRUE)
-
-        # Helper function
-        filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh = 1) {
-          primary_samples <- colData$Sample_ID[colData$Condition == "Untreated"]
-          treated_samples <- colData$Sample_ID[colData$Condition == "Treated"]
-
-          selected_genes <- rownames(countData)[apply(countData, 1, function(gene_expr) {
-            expr_untreated <- gene_expr[primary_samples]
-            expr_treated   <- gene_expr[treated_samples]
-
-            prop_untreated <- sum(expr_untreated >= threshold, na.rm = TRUE) / sum(!is.na(expr_untreated))
-            prop_treated   <- sum(expr_treated   >= threshold, na.rm = TRUE) / sum(!is.na(expr_treated))
-
-            return(prop_untreated == 1 || prop_treated == 1)
-          })]
-
-          filtered <- countData[selected_genes, , drop = FALSE]
-          message("Low-expression gene filtering complete. Retained genes: ", nrow(filtered))
-          return(filtered)
-        }
-
-        normalized_data <- filter_low_expression_genes(
-          countData = normalized_data,
-          colData = colData(),
-          threshold = global_q1,
-          prop_thresh = input$prop_thresh
-        )
-
-        # Set PC1 rotation vector
-        selected_pc1_data(
-          if (current_type == "TPM") pc1_data_tpm else if (current_type == "FPKM") pc1_data_fpkm
-          else if (input$normalization_method == "TPM") pc1_data_tpm else pc1_data_fpkm
-        )
-      })
-
-      # Step 3: Per-donor processing
       donors <- sort(unique(colData()$Donor_ID))
       total_donors <- length(donors)
       results <- data.frame(Donor_ID = character(), Model = character(), PC1_Score = numeric(), ES = numeric())
 
-      withProgress(message = "Processing Donors", value = 0, {
+      # Set PC1 data
+      current_type <- expr_type()
+      if (current_type == "TPM") {
+        selected_pc1_data(pc1_data_tpm)
+      } else if (current_type == "FPKM") {
+        selected_pc1_data(pc1_data_fpkm)
+      } else {
+        method <- input$normalization_method
+        selected_pc1_data(if (method == "TPM") pc1_data_tpm else pc1_data_fpkm)
+      }
+
+      withProgress(message = "Processing", value = 0, {
         for (i in seq_along(donors)) {
           donor <- donors[i]
           incProgress(1 / total_donors, detail = paste0("Donor ID: ", donor, " [", i, "/", total_donors, "]"))
 
           donor_colData <- colData()[colData()$Donor_ID == donor, ]
-          sample_ids <- intersect(colnames(normalized_data), donor_colData$Sample_ID)
-          donor_expr <- normalized_data[, sample_ids, drop = FALSE]
+          sample_ids <- intersect(colnames(countData()), donor_colData$Sample_ID)
+          donor_counts <- countData()[, sample_ids, drop = FALSE]
 
-          log2fc <- calculate_log2fc(donor_colData, donor_expr)
+          # Determine expression matrix
+          expr_matrix <- if (current_type %in% c("TPM", "FPKM")) {
+            donor_counts
+          } else {
+            method <- input$normalization_method
+            if (method == "TPM") {
+              calculate_tpm(donor_counts, gene_lengths)
+            } else {
+              calculate_fpkm(donor_counts, gene_lengths)
+            }
+          }
+
+          # Calculate scores
+          log2fc <- calculate_log2fc(donor_colData, expr_matrix)
           pc1_scores <- calculate_pc1_scores(log2fc, selected_pc1_data())
           es_scores  <- perform_fgsea(log2fc, selected_gmt)
 
           pc1 <- if (nrow(pc1_scores) > 0) pc1_scores$PC1_Score else NA
           es  <- if (nrow(es_scores) > 0)  es_scores$ES         else NA
+
+          # Extract model (ensure uniqueness)
           model <- unique(donor_colData$Model)
           if (length(model) > 1) model <- model[1]
 
+          # Append row
           results <- rbind(results, data.frame(
             Donor_ID = donor,
             Model = model,
@@ -141,6 +111,7 @@ mod_step5_server <- function(
 
       processed_data(results)
 
+      # UI: download button
       output$download_results_ui <- renderUI({
         req(nrow(processed_data()) > 0)
         downloadButton(ns("download_results"), "Download Results", class = "btn-success")

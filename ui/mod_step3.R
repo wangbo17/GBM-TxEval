@@ -5,12 +5,13 @@ mod_step3_ui <- function(id) {
 
   sidebarLayout(
     sidebarPanel(
-      h4("Select Metadata Variables for Filtering"),
-      uiOutput(ns("col_matching_filter")),
-      br(),
+      h4("Define Filtering Criteria"),
 
       h5("Optional: Add Extra Filtering Criteria"),
       uiOutput(ns("extra_filter_ui")),
+      br(),
+
+      uiOutput(ns("extra_filter_list")),
       br(),
 
       fluidRow(

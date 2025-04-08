@@ -1,3 +1,5 @@
+# server/mod_step6.R
+
 mod_step6_server <- function(id, processed_data, colData, extra_info_columns) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -6,63 +8,77 @@ mod_step6_server <- function(id, processed_data, colData, extra_info_columns) {
       req(processed_data(), colData())
 
       withProgress(message = "Generating Plot", value = 0, {
-        incProgress(0.5, detail = "Loading processed results...")
+        incProgress(0.3, detail = "Preparing data...")
 
         data <- processed_data()
         data <- na.omit(data)
+        data$Model <- factor(data$Model)
 
-        col_info <- colData()[, c("Patient_ID", extra_info_columns()), drop = FALSE]
-        data <- merge(data, col_info, by = "Patient_ID", all.x = TRUE)
+        # Ensure Donor_ID is character for merging
+        data$Donor_ID <- as.character(data$Donor_ID)
+        col_data_df <- colData()
+        col_data_df$Donor_ID <- as.character(col_data_df$Donor_ID)
 
-        data$Responder <- factor(
-          ifelse(data$NES < 0, "Down Responders", "Up Responders"), 
-          levels = c("Up Responders", "Down Responders")
-        )
+        # Check and extract valid extra info columns
+        extra_cols <- extra_info_columns()
+        valid_extra_cols <- extra_cols[extra_cols %in% colnames(col_data_df)]
 
-        color_map <- switch(
-          input$color_palette,
-          "viridis" = c("Up Responders" = "#440154", "Down Responders" = "#21908d"),
-          "cividis" = c("Up Responders" = "#00224E", "Down Responders" = "#94D740"),
-          "default" = c("Up Responders" = "#1f77b4", "Down Responders" = "#d62728")
-        )
+        if (length(valid_extra_cols) > 0) {
+          col_info <- unique(col_data_df[, c("Donor_ID", valid_extra_cols), drop = FALSE])
+          data <- merge(data, col_info, by = "Donor_ID", all.x = TRUE)
+        }
 
+        # Build hover text
         hover_text <- apply(data, 1, function(row) {
-          extra_info_text <- paste(
-            extra_info_columns(),
-            ": ",
-            row[extra_info_columns()],
-            collapse = "<br>"
-          )
-          paste(
-            "Patient ID:", row["Patient_ID"],
-            "<br>PC1 Score:", round(as.numeric(row["PC1_Score"]), 2),
-            "<br>NES:", round(as.numeric(row["NES"]), 2),
-            if (!is.null(extra_info_text) && extra_info_text != "") paste0("<br>", extra_info_text)
-          )
+          if (length(valid_extra_cols) > 0) {
+            extra_info_text <- paste(
+              paste0(valid_extra_cols, ": ", row[valid_extra_cols]),
+              collapse = "<br>"
+            )
+            paste0(
+              "Donor ID: ", row[["Donor_ID"]],
+              "<br>Model: ", row[["Model"]],
+              "<br>PC1 Score: ", round(as.numeric(row[["PC1_Score"]]), 2),
+              "<br>ES: ", round(as.numeric(row[["ES"]]), 2),
+              "<br>", extra_info_text
+            )
+          } else {
+            paste0(
+              "Donor ID: ", row[["Donor_ID"]],
+              "<br>Model: ", row[["Model"]],
+              "<br>PC1 Score: ", round(as.numeric(row[["PC1_Score"]]), 2),
+              "<br>ES: ", round(as.numeric(row[["ES"]]), 2)
+            )
+          }
         })
 
+        incProgress(0.4, detail = "Building plot...")
+
         plotly_plot <- plot_ly(
-          data, 
-          x = ~PC1_Score, 
-          y = ~NES, 
-          type = "scatter", 
-          mode = "markers", 
-          text = hover_text,
+          data,
+          x = ~PC1_Score,
+          y = ~ES,
+          type = 'scatter',
+          mode = 'markers+text',
+          text = ~Donor_ID,
+          textposition = "top center",
+          textfont = list(size = 10),
+          hovertext = hover_text,
           hoverinfo = "text",
-          color = ~Responder,
-          colors = color_map,
+          color = ~Model,
+          symbol = ~Model,
+          symbols = "circle",
           marker = list(size = input$point_size, opacity = input$point_opacity)
-        ) %>%
-          layout(
-            title = "NES vs PC1",
-            xaxis = list(title = "log2FC PC1"),
-            yaxis = list(title = "JARID2 NES"),
-            hovermode = "closest"
-          )
+        ) %>% layout(
+          title = "",
+          xaxis = list(title = "log2FC PC1 Score"),
+          yaxis = list(title = "JARID2 Enrichment Score (ES)"),
+          legend = list(title = list(text = ""))
+        )
 
         output$plot_output <- renderPlotly({ plotly_plot })
 
-        incProgress(0.5, detail = "Finalizing visualization...")
+        incProgress(0.3, detail = "Done.")
       })
     })
   })

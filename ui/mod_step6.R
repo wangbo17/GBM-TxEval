@@ -1,18 +1,16 @@
+# ui/mod_step6.R
+
 mod_step6_ui <- function(id) {
   ns <- NS(id)
-  
+
   sidebarLayout(
     sidebarPanel(
-      h4("Generate Visualization"),
+      h4("Step 6: Generate Visualization"),
       br(),
-      
-      sliderInput(ns("point_size"), "Marker Size:", min = 5, max = 20, value = 12.5, step = 0.5),
-      sliderInput(ns("point_opacity"), "Marker Opacity:", min = 0.1, max = 1, value = 0.75, step = 0.05),
-      selectInput(ns("color_palette"), "Color Palette:", 
-                  choices = list("Default" = "default", 
-                                 "Viridis" = "viridis", 
-                                 "Cividis" = "cividis"), 
-                  selected = "default"),
+
+      sliderInput(ns("point_size"), "Point Size:", min = 5, max = 20, value = 10, step = 1),
+      sliderInput(ns("point_opacity"), "Point Opacity:", min = 0.1, max = 1, value = 0.8, step = 0.05),
+
       br(),
 
       actionButton(ns("start_plotting"), "Generate Plot", class = "btn-plot", style = "width: 45%;"),

@@ -62,8 +62,9 @@ server <- function(input, output, session) {
     rename_map = reactive({
       list(
         Sample_ID = input[["step2-sample_id_col"]],
-        Patient_ID = input[["step2-patient_id_col"]],
-        Tumor_Stage = input[["step2-tumor_stage_col"]]
+        Donor_ID = input[["step2-donor_id_col"]],
+        Condition = input[["step2-tumor_condition_col"]],
+        Model = input[["step2-model_col"]]
       )
     }),
     gene_lengths = gene_lengths
@@ -72,11 +73,14 @@ server <- function(input, output, session) {
     "step5",
     colData = step4_return$colData,
     countData = step4_return$countData,
+    extra_info_columns = step2_return$extra_info_columns,
     gene_lengths = gene_lengths,
-    pc1_data = pc1_data,
+    expr_type = step1_return$expr_type,
     gmt_data = gmt_data,
-    gmt_data_symbol = gmt_data_symbol
-    )
+    gmt_data_symbol = gmt_data_symbol,
+    pc1_data_fpkm = pc1_data_fpkm,
+    pc1_data_tpm = pc1_data_tpm
+  )
   step6_return <- mod_step6_server(
     "step6",
     processed_data = step5_return$processed_data,

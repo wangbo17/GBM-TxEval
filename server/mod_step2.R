@@ -12,8 +12,9 @@ mod_step2_server <- function(id, meta_data_reactive) {
 
       tagList(
         selectInput(ns("sample_id_col"), "Match Sample ID to:", choices = cols),
-        selectInput(ns("patient_id_col"), "Match Patient ID to:", choices = cols),
-        selectInput(ns("tumor_stage_col"), "Match Tumor Stage (Primary vs. Recurrent) to:", choices = cols)
+        selectInput(ns("donor_id_col"), "Match Donor ID to:", choices = cols),
+        selectInput(ns("model_col"), "Match Glioma Model to:", choices = cols),
+        selectInput(ns("tumor_condition_col"), "Match Condition (Untreated vs. Treated) to:", choices = cols)
       )
     })
 
@@ -26,11 +27,11 @@ mod_step2_server <- function(id, meta_data_reactive) {
       req(meta_data_reactive())
       available_columns <- setdiff(
         colnames(meta_data_reactive()),
-        c(input$sample_id_col, input$patient_id_col, input$tumor_stage_col, extra_info_columns())
+        c(input$sample_id_col, input$donor_id_col, input$model_col, input$tumor_condition_col, extra_info_columns())
       )
 
       tagList(
-        selectInput(ns("extra_info_select"), "Add Extra Information Column:", choices = available_columns),
+        selectInput(ns("extra_info_select"), "Add Metadata Column:", choices = available_columns),
         actionButton(ns("add_extra_info"), "Add", class = "btn-success"),
         br(),
         uiOutput(ns("extra_info_list"))
@@ -50,9 +51,11 @@ mod_step2_server <- function(id, meta_data_reactive) {
       req(extra_info_columns())
       tagList(
         lapply(extra_info_columns(), function(col_name) {
-          fluidRow(
-            column(10, strong(col_name)),
-            column(2, actionButton(ns(paste0("remove_", col_name)), "✖", class = "btn-danger btn-sm"))
+          div(
+            class = "d-flex align-items-end mb-2",
+            div(style = "flex: 1;", strong(col_name)),
+            div(style = "margin-left: 10px;",
+                actionButton(ns(paste0("remove_", col_name)), "✖", class = "btn-danger btn-sm"))
           )
         })
       )
@@ -68,8 +71,9 @@ mod_step2_server <- function(id, meta_data_reactive) {
 
     return(list(
       sample_id_col = reactive(input$sample_id_col),
-      patient_id_col = reactive(input$patient_id_col),
-      tumor_stage_col = reactive(input$tumor_stage_col),
+      donor_id_col = reactive(input$donor_id_col),
+      model_col = reactive(input$model_col),
+      tumor_condition_col = reactive(input$tumor_condition_col),
       extra_info_columns = extra_info_columns
     ))
   })
