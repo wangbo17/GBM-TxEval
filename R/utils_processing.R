@@ -19,8 +19,38 @@ calculate_tpm <- function(countData, gene_lengths) {
   return(tpm)
 }
 
+# Function to normalize condition labels
+normalize_condition <- function(cond) {
+  cond_lower <- tolower(cond)
+  ifelse(cond_lower %in% c("untreated", "primary", "0"), "Untreated",
+         ifelse(cond_lower %in% c("treated", "recurrent", "1"), "Treated", cond))
+}
+
+# Function to filter low-expression genes
+filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh = 1) {
+  colData$Condition <- normalize_condition(colData$Condition)
+
+  untreated_samples <- colData$Sample_ID[colData$Condition == "Untreated"]
+  treated_samples   <- colData$Sample_ID[colData$Condition == "Treated"]
+
+  selected_genes <- rownames(countData)[apply(countData, 1, function(gene_expr) {
+    expr_untreated <- gene_expr[untreated_samples]
+    expr_treated   <- gene_expr[treated_samples]
+
+    prop_untreated <- sum(expr_untreated >= threshold, na.rm = TRUE) / sum(!is.na(expr_untreated))
+    prop_treated   <- sum(expr_treated   >= threshold, na.rm = TRUE) / sum(!is.na(expr_treated))
+
+    return(prop_untreated == 1 || prop_treated == 1)
+  })]
+
+  filtered <- countData[selected_genes, , drop = FALSE]
+  message("Low-expression gene filtering complete. Retained genes: ", nrow(filtered))
+  return(filtered)
+}
+
 # Function to calculate log2 fold change (log2FC)
 calculate_log2fc <- function(colData, expr_matrix) {
+  colData$Condition <- normalize_condition(colData$Condition)
   log2fc_results <- data.frame()
   unique_donors <- unique(colData$Donor_ID)
   for (donor in unique_donors) {

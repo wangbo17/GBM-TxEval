@@ -19,8 +19,8 @@ mod_step4_ui <- function(id) {
       br(),
       div(
         style = "text-align: right;",
-        downloadButton(ns("download_colData"), "Download Filtered Metadata", class = "btn-success"),
-        downloadButton(ns("download_countData"), "Download Filtered Gene Expression Matrix", class = "btn-success")
+        downloadButton(ns("download_colData"), "Download Metadata", class = "btn-success"),
+        downloadButton(ns("download_countData"), "Download Gene Expression Matrix", class = "btn-success")
       )
     )
   )

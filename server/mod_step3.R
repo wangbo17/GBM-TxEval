@@ -44,11 +44,11 @@ mod_step3_server <- function(id, meta_data_reactive) {
       }
     })
 
-    observe({
+    observeEvent(extra_filter_columns(), {
       lapply(extra_filter_columns(), function(col_name) {
         observeEvent(input[[paste0("remove_filter_", col_name)]], {
           extra_filter_columns(setdiff(extra_filter_columns(), col_name))
-        })
+        }, ignoreInit = TRUE, ignoreNULL = TRUE)
       })
     })
 

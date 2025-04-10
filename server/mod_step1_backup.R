@@ -100,10 +100,10 @@ mod_step1_server <- function(id) {
         )
 
         type_msg <- switch(auto_mode,
-          "TPM" = "🔍 Detected expression data type: TPM.",
-          "Counts" = "🔍 Detected expression data type: Counts.",
-          "FPKM" = "🔍 Detected expression data type: FPKM.",
-          "Unknown" = "❓ Unable to determine expression data type. Please check your file."
+          "TPM" = "🔍 Detected expression data type: TPM (column sums ≈ 1M)",
+          "Counts" = "🔍 Detected expression data type: Counts (integer or count-like values)",
+          "FPKM" = "🔍 Detected expression data type: FPKM (non-integer, high-range)",
+          "Unknown" = "❓ Unable to determine expression data type. Please check your file or specify manually."
         )
 
         upload_statuses$raw <- paste(
@@ -127,10 +127,10 @@ mod_step1_server <- function(id) {
       expr_type(final_mode)
 
       base_msg <- switch(auto_mode,
-        "TPM" = "🔍 Detected expression data type: TPM.",
-        "Counts" = "🔍 Detected expression data type: Counts.",
-        "FPKM" = "🔍 Detected expression data type: FPKM.",
-        "Unknown" = "❓ Unable to determine expression data type. Please check your file."
+        "TPM" = "🔍 Detected expression data type: TPM (column sums ≈ 1M)",
+        "Counts" = "🔍 Detected expression data type: Counts (integer or count-like values)",
+        "FPKM" = "🔍 Detected expression data type: FPKM (non-integer, high-range)",
+        "Unknown" = "❓ Unable to determine expression data type. Please check your file or specify manually."
       )
 
       override_note <- if (input$manual_expr_type != "Auto" && final_mode != auto_mode) {

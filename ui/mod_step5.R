@@ -36,7 +36,7 @@ mod_step5_ui <- function(id) {
       wellPanel(
         style = "padding: 15px 10px 5px 10px; margin-bottom: 5px;",
         h5("Gene Set Type"),
-        p("Select a gene set format that matches your expression matrix."),
+        p("Select a gene set format that matches your expression matrix:"),
         radioButtons(
           ns("gene_set_choice"),
           label = NULL,

@@ -32,7 +32,7 @@ mod_step5_server <- function(
       } else {
         radioButtons(
           ns("normalization_method"),
-          label = "Select Normalization Method:",
+          label = "Select normalization method:",
           choices = c("FPKM", "TPM"),
           selected = "FPKM"
         )
@@ -69,26 +69,6 @@ mod_step5_server <- function(
         # Step 2: Filter low-expression genes (based on global Q1)
         all_values <- unlist(normalized_data)
         global_q1 <- quantile(all_values[all_values > 0], probs = 0.25, na.rm = TRUE)
-
-        # Helper function
-        filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh = 1) {
-          primary_samples <- colData$Sample_ID[colData$Condition == "Untreated"]
-          treated_samples <- colData$Sample_ID[colData$Condition == "Treated"]
-
-          selected_genes <- rownames(countData)[apply(countData, 1, function(gene_expr) {
-            expr_untreated <- gene_expr[primary_samples]
-            expr_treated   <- gene_expr[treated_samples]
-
-            prop_untreated <- sum(expr_untreated >= threshold, na.rm = TRUE) / sum(!is.na(expr_untreated))
-            prop_treated   <- sum(expr_treated   >= threshold, na.rm = TRUE) / sum(!is.na(expr_treated))
-
-            return(prop_untreated == 1 || prop_treated == 1)
-          })]
-
-          filtered <- countData[selected_genes, , drop = FALSE]
-          message("Low-expression gene filtering complete. Retained genes: ", nrow(filtered))
-          return(filtered)
-        }
 
         normalized_data <- filter_low_expression_genes(
           countData = normalized_data,

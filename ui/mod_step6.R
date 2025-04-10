@@ -8,7 +8,7 @@ mod_step6_ui <- function(id) {
       h4("Step 6: Generate Visualization"),
       br(),
 
-      sliderInput(ns("point_size"), "Point Size:", min = 5, max = 20, value = 10, step = 1),
+      sliderInput(ns("point_size"), "Point Size:", min = 5, max = 20, value = 12, step = 1),
       sliderInput(ns("point_opacity"), "Point Opacity:", min = 0.1, max = 1, value = 0.8, step = 0.05),
 
       br(),
@@ -21,7 +21,7 @@ mod_step6_ui <- function(id) {
     ),
     mainPanel(
       h4("Visualization Output"),
-      plotlyOutput(ns("plot_output"))
+      plotlyOutput(ns("plot_output"), height = "600px")
     )
   )
 }

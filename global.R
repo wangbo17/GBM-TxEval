@@ -12,11 +12,11 @@ library(plotly)
 options(shiny.maxRequestSize = 500 * 1024^2)
 
 # ==== Load Reference Data ====
-gene_lengths <- read.csv("data/gencode.csv")
+gene_lengths <- read.csv("data/gencode_v27.csv")
 pc1_data_tpm <- readRDS("data/pc1_rotation_original_tpm.rds")
 pc1_data_fpkm <- readRDS("data/pc1_rotation_original_fpkm.rds")
-gmt_data <- list(JARID2 = readLines("data/GTRD_TFs_GeneIDs_JARID2.txt"))
-gmt_data_symbol <- list(JARID2 = readLines("data/GTRD_TFs_GeneNames_JARID2.txt"))
+gmt_data <- list(JARID2 = readLines("data/GTRD_TFs_GeneIDs_JARID2_v2019.txt"))
+gmt_data_symbol <- list(JARID2 = readLines("data/GTRD_TFs_GeneNames_JARID2_v2019.txt"))
 
 # ==== Load Custom Functions ====
 source("R/utils_io.R")
