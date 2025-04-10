@@ -26,7 +26,7 @@ normalize_condition <- function(cond) {
          ifelse(cond_lower %in% c("treated", "recurrent", "1"), "Treated", cond))
 }
 
-# Function to filter low-expression genes
+# Function to filter low-expression genes (fixed)
 filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh) {
   colData$Condition <- normalize_condition(colData$Condition)
 
