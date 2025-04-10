@@ -27,7 +27,7 @@ normalize_condition <- function(cond) {
 }
 
 # Function to filter low-expression genes
-filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh = 1) {
+filter_low_expression_genes <- function(countData, colData, threshold, prop_thresh) {
   colData$Condition <- normalize_condition(colData$Condition)
 
   untreated_samples <- colData$Sample_ID[colData$Condition == "Untreated"]
@@ -40,7 +40,7 @@ filter_low_expression_genes <- function(countData, colData, threshold, prop_thre
     prop_untreated <- sum(expr_untreated >= threshold, na.rm = TRUE) / sum(!is.na(expr_untreated))
     prop_treated   <- sum(expr_treated   >= threshold, na.rm = TRUE) / sum(!is.na(expr_treated))
 
-    return(prop_untreated == 1 || prop_treated == 1)
+    return(prop_untreated >= prop_thresh || prop_treated >= prop_thresh)
   })]
 
   filtered <- countData[selected_genes, , drop = FALSE]
