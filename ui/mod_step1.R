@@ -10,7 +10,7 @@ mod_step1_ui <- function(id) {
       tags$div(style = "height: 6px;"),
       tags$div(
         style = "background-color: #E5E5EA; padding: 12px; border-radius: 10px; margin-bottom: 12px; font-size: 16px; line-height: 1.5; color: #1D1D1F;",
-        tags$p(strong("About GLIBO-TxEval:"), style = "margin-bottom: 4px; color: #3A3A3C;"),
+        tags$p(strong("About GBM-TxEval:"), style = "margin-bottom: 4px; color: #3A3A3C;"),
         tags$p(
           "This tool enables the transcriptional stratification of glioblastoma (GBM) based on paired gene expression profiles. It facilitates the analysis of treatment-induced transcriptional changes and supports the identification of suitable preclinical models for precision therapy development.",
           style = "margin-top: 0; margin-bottom: 2px;"

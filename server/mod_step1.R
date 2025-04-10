@@ -44,19 +44,6 @@ mod_step1_server <- function(id) {
       return("Unknown")
     }
 
-    load_csv <- function(file_input, label = "Data File") {
-      req(file_input)
-      withProgress(message = paste("Loading", label, "..."), value = 0.5, {
-        df <- tryCatch(
-          fread(file_input$datapath, header = TRUE, data.table = FALSE, check.names = FALSE),
-          error = function(e) NULL
-        )
-        if (is.null(df)) return(NULL)
-        incProgress(1, detail = "Done")
-        return(df)
-      })
-    }
-
     update_controls <- function() {
       if (!is.null(meta_data()) && !is.null(raw_data()) && expr_type() != "Unknown") {
         updateActionButton(session, "to_step2", disabled = FALSE)

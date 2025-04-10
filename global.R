@@ -1,11 +1,43 @@
 # global.R
 
 # ==== Load Required Libraries ====
+# shiny
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny", dependencies = TRUE)
+}
 library(shiny)
+
+# bslib
+if (!requireNamespace("bslib", quietly = TRUE)) {
+  install.packages("bslib", dependencies = TRUE)
+}
 library(bslib)
+
+# DT
+if (!requireNamespace("DT", quietly = TRUE)) {
+  install.packages("DT", dependencies = TRUE)
+}
 library(DT)
+
+# data.table
+if (!requireNamespace("data.table", quietly = TRUE)) {
+  install.packages("data.table", dependencies = TRUE)
+}
 library(data.table)
+
+# fgsea (Bioconductor package)
+if (!requireNamespace("fgsea", quietly = TRUE)) {
+  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+  }
+  BiocManager::install("fgsea")
+}
 library(fgsea)
+
+# plotly
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly", dependencies = TRUE)
+}
 library(plotly)
 
 # ==== Global Options ====
