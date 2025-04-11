@@ -1,7 +1,7 @@
 # app.R
 
 library(shiny)
-setwd("/resstore/b0135/Users/bowang/GLIBO-TxEval")
+setwd("/resstore/b0135/Users/bowang/GBM-TxEval")
 
 # Source global settings and resources
 source("global.R")

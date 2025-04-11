@@ -4,7 +4,6 @@ mod_step5_server <- function(
   id,
   colData,
   countData,
-  extra_info_columns,
   gene_lengths,
   expr_type,
   gmt_data,
@@ -15,13 +14,16 @@ mod_step5_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # Final processed donor-level result table
-    processed_data <- reactiveVal(
-      data.frame(Donor_ID = character(), Model = character(), PC1_Score = numeric(), ES = numeric())
-    )
+    # 初始化空结果表，仅含基础列
+    processed_data <- reactiveVal({
+      base_cols <- c("Donor_ID", "Model", "PC1_Score", "ES", "Responder")
+      df <- as.data.frame(matrix(ncol = length(base_cols), nrow = 0))
+      colnames(df) <- base_cols
+      df
+    })
+
     selected_pc1_data <- reactiveVal(NULL)
 
-    # Render normalization method UI
     output$norm_ui <- renderUI({
       current_type <- expr_type()
       if (current_type %in% c("TPM", "FPKM")) {
@@ -39,19 +41,15 @@ mod_step5_server <- function(
       }
     })
 
-    # Render table
     output$processed_results <- renderDT({
       datatable(processed_data(), options = list(scrollX = TRUE))
     })
 
-    # Main logic
     observeEvent(input$start_processing, {
       req(colData(), countData())
 
       selected_gmt <- if (input$gene_set_choice == "symbol") gmt_data_symbol else gmt_data
       current_type <- expr_type()
-
-      # Step 1: Determine normalization method and apply normalization
       normalized_data <- NULL
 
       withProgress(message = "Preprocessing Expression Data", value = 0.3, {
@@ -66,7 +64,6 @@ mod_step5_server <- function(
           }
         }
 
-        # Step 2: Filter low-expression genes (based on global Q1)
         all_values <- unlist(normalized_data)
         global_q1 <- quantile(all_values[all_values > 0], probs = 0.25, na.rm = TRUE)
 
@@ -77,14 +74,12 @@ mod_step5_server <- function(
           prop_thresh = input$prop_thresh
         )
 
-        # Set PC1 rotation vector
         selected_pc1_data(
           if (current_type == "TPM") pc1_data_tpm else if (current_type == "FPKM") pc1_data_fpkm
           else if (input$normalization_method == "TPM") pc1_data_tpm else pc1_data_fpkm
         )
       })
 
-      # Step 3: Per-donor processing
       donors <- sort(unique(colData()$Donor_ID))
       total_donors <- length(donors)
       results <- data.frame(Donor_ID = character(), Model = character(), PC1_Score = numeric(), ES = numeric())
@@ -115,9 +110,10 @@ mod_step5_server <- function(
             stringsAsFactors = FALSE
           ))
         }
-
-        updateActionButton(session, "start_plotting", disabled = FALSE)
       })
+
+      # 添加 Responder 列（Up / Down based on ES）
+      results$Responder <- ifelse(results$ES >= 0, "Up", "Down")
 
       processed_data(results)
 

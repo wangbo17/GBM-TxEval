@@ -73,7 +73,6 @@ server <- function(input, output, session) {
     "step5",
     colData = step4_return$colData,
     countData = step4_return$countData,
-    extra_info_columns = step2_return$extra_info_columns,
     gene_lengths = gene_lengths,
     expr_type = step1_return$expr_type,
     gmt_data = gmt_data,

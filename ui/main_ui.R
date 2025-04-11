@@ -71,7 +71,7 @@ ui <- fluidPage(
     div(
       HTML("<h1 style='margin-top: 25px; margin-bottom: 15px; padding-top: 10px;'>&#129504; GBM-TxEval</h1>"),
       HTML("<h4 style='text-align: right; margin-top: 0; font-style: italic; font-weight: normal; font-size: 18px; padding-bottom: 10px;'>
-      Glioma Brain Organoid Treatment Response Evaluation</h4>")
+      Glioblastoma Treatment Response Evaluation</h4>")
     )
   ),
 
