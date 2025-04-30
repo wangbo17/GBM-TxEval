@@ -14,7 +14,6 @@ mod_step5_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # 初始化空结果表，仅含基础列
     processed_data <- reactiveVal({
       base_cols <- c("Donor_ID", "Model", "PC1_Score", "ES", "Responder")
       df <- as.data.frame(matrix(ncol = length(base_cols), nrow = 0))
@@ -112,7 +111,6 @@ mod_step5_server <- function(
         }
       })
 
-      # 添加 Responder 列（Up / Down based on ES）
       results$Responder <- ifelse(results$ES >= 0, "Up", "Down")
 
       processed_data(results)
