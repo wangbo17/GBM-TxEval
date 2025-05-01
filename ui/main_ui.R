@@ -69,9 +69,14 @@ ui <- fluidPage(
 
   titlePanel(
     div(
-      HTML("<h1 style='margin-top: 25px; margin-bottom: 15px; padding-top: 10px;'>&#129504; GBM-TxEval</h1>"),
-      HTML("<h4 style='text-align: right; margin-top: 0; font-style: italic; font-weight: normal; font-size: 18px; padding-bottom: 10px;'>
-      Glioblastoma Treatment Response Evaluation</h4>")
+      HTML("
+        <div style='display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; margin-bottom: 5px; padding-top: 10px;'>
+          <h1 style='margin: 0;'>&#129504; GBM-TxEval</h1>
+          <h4 style='margin: 0; font-style: italic; font-weight: normal; font-size: 18px;'>Glioblastoma Treatment Response Evaluation</h4>
+        </div>
+      "),
+      HTML("<p style='text-align: right; margin: 2px; font-size: 14px; color: #666;'>
+        Author: Bo Wang | Version: Beta</p>")
     )
   ),
 
