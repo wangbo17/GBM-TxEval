@@ -2,7 +2,22 @@
 
 # Function to calculate FPKM values
 calculate_fpkm <- function(countData, gene_lengths) {
-  matched_gene_lengths <- gene_lengths[match(rownames(countData), gene_lengths$ID), ]
+  gene_ids <- rownames(countData)
+
+  id_idx <- match(gene_ids, gene_lengths$ID)
+  symbol_idx <- match(gene_ids, gene_lengths$Symbol)
+
+  id_overlap <- sum(!is.na(id_idx))
+  symbol_overlap <- sum(!is.na(symbol_idx))
+
+  if (id_overlap > symbol_overlap && id_overlap > 0) {
+    matched_gene_lengths <- gene_lengths[id_idx, ]
+  } else if (symbol_overlap > 0) {
+    matched_gene_lengths <- gene_lengths[symbol_idx, ]
+  } else {
+    stop("No overlap with gene IDs or symbols.")
+  }
+
   gene_lengths_kb <- matched_gene_lengths$Length / 1000
   total_counts <- colSums(countData)
   fpkm_values <- sweep(countData, 1, gene_lengths_kb, FUN = "/")
@@ -12,12 +27,28 @@ calculate_fpkm <- function(countData, gene_lengths) {
 
 # Function to calculate TPM values
 calculate_tpm <- function(countData, gene_lengths) {
-  matched_gene_lengths <- gene_lengths[match(rownames(countData), gene_lengths$ID), ]
+  gene_ids <- rownames(countData)
+
+  id_idx <- match(gene_ids, gene_lengths$ID)
+  symbol_idx <- match(gene_ids, gene_lengths$Symbol)
+
+  id_overlap <- sum(!is.na(id_idx))
+  symbol_overlap <- sum(!is.na(symbol_idx))
+
+  if (id_overlap > symbol_overlap && id_overlap > 0) {
+    matched_gene_lengths <- gene_lengths[id_idx, ]
+  } else if (symbol_overlap > 0) {
+    matched_gene_lengths <- gene_lengths[symbol_idx, ]
+  } else {
+    stop("No overlap with gene IDs or symbols.")
+  }
+
   gene_lengths_kb <- matched_gene_lengths$Length / 1000
   rpk <- sweep(countData, 1, gene_lengths_kb, FUN = "/")
-  tpm <- sweep(rpk, 2, colSums(rpk) / 1e6, FUN = "/")
+  tpm <- sweep(rpk, 2, colSums(rpk, na.rm = TRUE) / 1e6, FUN = "/")
   return(tpm)
 }
+
 
 # Function to normalize condition labels
 normalize_condition <- function(cond) {

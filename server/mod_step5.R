@@ -9,7 +9,9 @@ mod_step5_server <- function(
   gmt_data,
   gmt_data_symbol,
   pc1_data_fpkm,
-  pc1_data_tpm
+  pc1_data_symbol_fpkm,
+  pc1_data_tpm,
+  pc1_data_symbol_tpm
 ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -74,8 +76,20 @@ mod_step5_server <- function(
         )
 
         selected_pc1_data(
-          if (current_type == "TPM") pc1_data_tpm else if (current_type == "FPKM") pc1_data_fpkm
-          else if (input$normalization_method == "TPM") pc1_data_tpm else pc1_data_fpkm
+          if (current_type %in% c("TPM", "FPKM")) {
+            if (input$gene_set_choice == "symbol") {
+              if (current_type == "TPM") pc1_data_symbol_tpm else pc1_data_symbol_fpkm
+            } else {
+              if (current_type == "TPM") pc1_data_tpm else pc1_data_fpkm
+            }
+          } else {
+            method <- input$normalization_method
+            if (input$gene_set_choice == "symbol") {
+              if (method == "TPM") pc1_data_symbol_tpm else pc1_data_symbol_fpkm
+            } else {
+              if (method == "TPM") pc1_data_tpm else pc1_data_fpkm
+            }
+          }
         )
       })
 

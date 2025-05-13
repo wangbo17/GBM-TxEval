@@ -14,23 +14,38 @@ mod_step6_server <- function(id, processed_data, colData, extra_info_columns) {
         data <- na.omit(data)
         data$Model <- factor(data$Model)
 
-        # Ensure Donor_ID is character for merging
         data$Donor_ID <- as.character(data$Donor_ID)
         col_data_df <- colData()
         col_data_df$Donor_ID <- as.character(col_data_df$Donor_ID)
 
-        # Check and extract valid extra info columns
         extra_cols <- extra_info_columns()
         valid_extra_cols <- extra_cols[extra_cols %in% colnames(col_data_df)]
+        cat("Valid extra info columns:\n")
+        print(valid_extra_cols)
 
         if (length(valid_extra_cols) > 0) {
           col_info <- unique(col_data_df[, c("Donor_ID", valid_extra_cols), drop = FALSE])
           data <- merge(data, col_info, by = "Donor_ID", all.x = TRUE)
         }
 
+        # Check structure of merged data
+        cat("Columns in merged data:\n")
+        print(colnames(data))
+        cat("First row of merged data:\n")
+        print(data[1, , drop = FALSE])
+
         # Build hover text
         hover_text <- apply(data, 1, function(row) {
+          cat("Processing row:\n")
+          print(row)
+
           if (length(valid_extra_cols) > 0) {
+            # check if all valid_extra_cols exist in names(row)
+            cat("Row names:\n")
+            print(names(row))
+            cat("Accessing valid_extra_cols in row:\n")
+            print(valid_extra_cols)
+
             extra_info_text <- paste(
               paste0(valid_extra_cols, ": ", row[valid_extra_cols]),
               collapse = "<br>"

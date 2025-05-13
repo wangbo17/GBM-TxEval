@@ -78,7 +78,9 @@ server <- function(input, output, session) {
     gmt_data = gmt_data,
     gmt_data_symbol = gmt_data_symbol,
     pc1_data_fpkm = pc1_data_fpkm,
-    pc1_data_tpm = pc1_data_tpm
+    pc1_data_symbol_fpkm = pc1_data_symbol_fpkm,
+    pc1_data_tpm = pc1_data_tpm,
+    pc1_data_symbol_tpm = pc1_data_symbol_tpm
   )
   step6_return <- mod_step6_server(
     "step6",
