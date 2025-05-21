@@ -2,7 +2,7 @@
 
 ui <- fluidPage(
   theme = my_theme,
-
+  
   tags$head(tags$style(HTML("
     body {
       font-family: '-apple-system', 'BlinkMacSystemFont', 'sans-serif';

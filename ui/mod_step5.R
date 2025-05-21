@@ -8,31 +8,23 @@ mod_step5_ui <- function(id) {
       h4("Step 5: Process Data"),
       p(strong("Run Gene Set Enrichment Analysis (GSEA) and PC1 projection")),
 
-      # Normalization method block
+      actionButton(
+        ns("toggle_advanced"),
+        "Switch to Advanced Filtering (Experienced Users Only)",
+        class = "btn-outline-secondary",
+        style = "margin-bottom: 12px; width: 100%; font-weight: 500;"
+      ),
+
+      uiOutput(ns("filtering_ui")),
+
+      # ===== Normalization method block (NEW POSITION) =====
       wellPanel(
         style = "padding: 15px 10px 5px 10px; margin-bottom: 5px;",
         h5("Normalization Method"),
         uiOutput(ns("norm_ui"))
       ),
 
-      # Expression filtering threshold with tooltip
-      wellPanel(
-        style = "padding: 15px 10px 5px 10px; margin-bottom: 5px;",
-        h5("Low Expression Filter"),
-        tagList(
-          p("Retain genes expressed above the 25th percentile (Q1) in at least the specified proportion of 'Untreated' or 'Treated' samples."),
-          sliderInput(
-            ns("prop_thresh"),
-            label = NULL,
-            min = 0,
-            max = 1,
-            value = 1,
-            step = 0.05
-          )
-        )
-      ),
-
-      # Gene set type block
+      # ===== Gene set selection =====
       wellPanel(
         style = "padding: 15px 10px 5px 10px; margin-bottom: 5px;",
         h5("Gene Set Type"),
@@ -45,7 +37,7 @@ mod_step5_ui <- function(id) {
         )
       ),
 
-      # Action buttons
+      # ===== Action Buttons =====
       br(),
       fluidRow(
         column(6,
