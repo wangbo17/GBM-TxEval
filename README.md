@@ -130,10 +130,6 @@ Normalization is performed using uploaded gene length information, and both TPM 
 Log2 fold changes are computed **on normalized expression values** (either TPM or FPKM), not on raw counts. For count-based input, the data are first normalized according to the selected method, and then log2FC is calculated for each donor based on paired untreated vs. treated samples:
 
 ```
-ini
-
-
-CopyEdit
 log2FC_gene = log2((expr_treated + 0.01) / (expr_untreated + 0.01))
 ```
 
@@ -152,10 +148,6 @@ Specifically:
 - For each donor, their log2FC vector is **centered** and projected onto the PC1 axis using the formula:
 
   ```
-  ini
-  
-  
-  CopyEdit
   PC1_score = Σ (log2FC_gene × PC1_loading_gene)
   ```
 
@@ -170,10 +162,6 @@ To evaluate transcriptional programs affected by treatment, GBM-TxEval performs 
 The gene ranking is performed as follows:
 
 ```
-ini
-
-
-CopyEdit
 ranks = sort(log2FC, decreasing = TRUE)
 ```
 
