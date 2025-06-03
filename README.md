@@ -8,6 +8,7 @@ GBM-TxEval is a computational tool designed to evaluate transcriptional treatmen
 - `R/utils_processing.R`: Core computation functions (normalization, filtering, log2FC, FGSEA).
 - `server/`: Modular server logic for each step.
 - `ui/`: Modular UI components for each step.
+- `global.R`: Global configuration: packages, gene length tables, gene sets, PCA loadings, etc.
 - `app.R`: Main entry point combining all modules into a seamless workflow.
 
 ## ⚙️ Workflow Overview
@@ -124,14 +125,66 @@ The normalization method depends on the input expression type:
 
 Normalization is performed using uploaded gene length information, and both TPM and FPKM are computed with consistent formulae.
 
-#### 🧬 Gene Identifier Recognition
+#### 📉 Log2 Fold Change Calculation
 
-The application automatically determines whether the gene identifiers in the expression matrix are:
+Log2 fold changes are computed **on normalized expression values** (either TPM or FPKM), not on raw counts. For count-based input, the data are first normalized according to the selected method, and then log2FC is calculated for each donor based on paired untreated vs. treated samples:
 
-- **Ensembl IDs**, or
-- **HGNC Gene Symbols**
+```
+ini
 
-The appropriate gene set (GMT file) is then selected based on this classification. This auto-detection is strongly recommended, and the manual override is provided only as a fallback in rare cases of parsing failure.
+
+CopyEdit
+log2FC_gene = log2((expr_treated + 0.01) / (expr_untreated + 0.01))
+```
+
+A pseudocount of 0.01 is added to avoid division by zero.
+
+#### 🧭 PC1 Score Calculation
+
+After computing donor-specific log2FC vectors, each vector is projected into a predefined PCA space to calculate a **PC1 score**, which summarizes the direction and magnitude of the transcriptional response.
+
+Specifically:
+
+- A reference **PC1 rotation vector** (PCA loadings) is **precomputed from a cohort-wide log2FC matrix** derived from paired primary and recurrent glioblastoma bulk RNA-seq data.
+
+- The PCA was performed on the **entire transcriptome**, independent of any specific gene set (e.g., JARID2), following the strategy described in [Tanner *et al.*, *Genome Biology* 2024](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03172-3).
+
+- For each donor, their log2FC vector is **centered** and projected onto the PC1 axis using the formula:
+
+  ```
+  ini
+  
+  
+  CopyEdit
+  PC1_score = Σ (log2FC_gene × PC1_loading_gene)
+  ```
+
+- Only genes present in both the donor’s log2FC vector and the PCA rotation vector are used in the computation.
+
+This PC1 score captures the principal axis of transcriptional variation observed across treatment conditions and serves as a **continuous quantitative representation** of response magnitude.
+
+#### 🧬 Gene Set Enrichment Analysis
+
+To evaluate transcriptional programs affected by treatment, GBM-TxEval performs **Gene Set Enrichment Analysis (GSEA)** using the FGSEA algorithm. For each donor, normalized log2FC values are ranked and used as input for enrichment testing against a predefined gene set (e.g., **JARID2 target genes**).
+
+The gene ranking is performed as follows:
+
+```
+ini
+
+
+CopyEdit
+ranks = sort(log2FC, decreasing = TRUE)
+```
+
+Enrichment scores (ES) are calculated based on this ranking, with the top pathway's ES retained per donor.
+
+To ensure compatibility between gene sets and input expression data, the application **automatically detects the type of gene identifier** in the expression matrix:
+
+- If gene IDs match **Ensembl identifiers**, the Ensembl-based GMT file is used.
+- If gene IDs match **HGNC symbols**, the corresponding symbol-based GMT file is used.
+
+> ⚠️ **Note**: This automatic gene ID detection is highly recommended. Manual override is available but intended only for edge cases such as ambiguous gene formats or mismatched annotations.
 
 #### ⚙️ Processing and Feedback
 
