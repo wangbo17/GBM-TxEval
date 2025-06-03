@@ -5,7 +5,7 @@ mod_step5_ui <- function(id) {
 
   sidebarLayout(
     sidebarPanel(
-      h4("Step 5: Process Data"),
+      h4("Process Data"),
       p(strong("Run Gene Set Enrichment Analysis (GSEA) and PC1 projection")),
 
       actionButton(
@@ -29,11 +29,15 @@ mod_step5_ui <- function(id) {
         style = "padding: 15px 10px 5px 10px; margin-bottom: 5px;",
         h5("Gene Set Type"),
         p("Select a gene set format that matches your expression matrix:"),
-        radioButtons(
+        selectInput(
           ns("gene_set_choice"),
           label = NULL,
-          choices = c("Ensembl IDs (recommended)" = "ensembl", "HGNC Gene Symbols" = "symbol"),
-          selected = "ensembl"
+          choices = c(
+            "Auto (recommended)" = "auto",
+            "Ensembl IDs" = "ensembl",
+            "HGNC Gene Symbols" = "symbol"
+          ),
+          selected = "auto"
         )
       ),
 

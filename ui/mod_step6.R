@@ -5,7 +5,7 @@ mod_step6_ui <- function(id) {
 
   sidebarLayout(
     sidebarPanel(
-      h4("Step 6: Generate Visualization"),
+      h4("Generate Visualization"),
       br(),
 
       sliderInput(ns("point_size"), "Point Size:", min = 5, max = 20, value = 12, step = 1),

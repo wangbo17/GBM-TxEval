@@ -61,10 +61,10 @@ server <- function(input, output, session) {
     extra_info_columns = step2_return$extra_info_columns,
     rename_map = reactive({
       list(
-        Sample_ID = input[["step2-sample_id_col"]],
-        Donor_ID = input[["step2-donor_id_col"]],
-        Condition = input[["step2-tumor_condition_col"]],
-        Model = input[["step2-model_col"]]
+        Sample_ID = step2_return$sample_id_col(),
+        Donor_ID = step2_return$donor_id_col(),
+        Condition = step2_return$tumor_condition_col(),
+        Model = step2_return$model_col()
       )
     }),
     gene_lengths = gene_lengths
@@ -80,7 +80,8 @@ server <- function(input, output, session) {
     pc1_data_fpkm = pc1_data_fpkm,
     pc1_data_symbol_fpkm = pc1_data_symbol_fpkm,
     pc1_data_tpm = pc1_data_tpm,
-    pc1_data_symbol_tpm = pc1_data_symbol_tpm
+    pc1_data_symbol_tpm = pc1_data_symbol_tpm,
+    gene_label_type = step4_return$gene_label_type
   )
   step6_return <- mod_step6_server(
     "step6",

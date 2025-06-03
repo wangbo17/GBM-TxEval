@@ -13,6 +13,8 @@ mod_step4_server <- function(
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    gene_label_type <- reactiveVal(NULL)
+
     all_filters <- reactive({
       filters <- selected_filters()
       extras <- extra_filter_columns()
@@ -37,7 +39,7 @@ mod_step4_server <- function(
       for (new_name in names(renames)) {
         old_name <- renames[[new_name]]
         if (!is.null(old_name) && old_name %in% colnames(df)) {
-          colnames(df)[colnames(df) == old_name] <- new_name
+          df[[new_name]] <- df[[old_name]]
         }
       }
 
@@ -48,39 +50,44 @@ mod_step4_server <- function(
       return(df)
     })
 
-  countData <- reactive({
-    req(raw_data_reactive(), colData())
+    countData <- reactive({
+      req(raw_data_reactive(), colData())
 
-    raw_df <- raw_data_reactive()
-    message("Expression matrix loaded: ", nrow(raw_df), " genes × ", ncol(raw_df), " columns (including gene names).")
+      raw_df <- raw_data_reactive()
+      message("Expression matrix loaded: ", nrow(raw_df), " genes × ", ncol(raw_df), " columns (including gene names).")
 
-    rownames(raw_df) <- raw_df[[1]]
-    raw_df <- raw_df[, -1, drop = FALSE]
-    message("Gene names assigned. Matrix: ", nrow(raw_df), " genes × ", ncol(raw_df), " samples.")
+      rownames(raw_df) <- raw_df[[1]]
+      raw_df <- raw_df[, -1, drop = FALSE]
+      message("Gene names assigned. Matrix: ", nrow(raw_df), " genes × ", ncol(raw_df), " samples.")
 
-    id_overlap <- sum(rownames(raw_df) %in% gene_lengths$ID)
-
-    if (id_overlap > 0) {
-      raw_df <- raw_df[rownames(raw_df) %in% gene_lengths$ID, , drop = FALSE]
-      message("Filtered by Ensembl ID: ", nrow(raw_df), " genes retained.")
-    } else {
-      symbol_overlap <- sum(rownames(raw_df) %in% gene_lengths$Symbol)
-      if (symbol_overlap > 0) {
-        raw_df <- raw_df[rownames(raw_df) %in% gene_lengths$Symbol, , drop = FALSE]
-        message("Ensembl ID match failed. Filtered by gene symbol: ", nrow(raw_df), " genes retained.")
-      } else {
-        stop("No overlap found with Ensembl IDs or gene symbols in the annotation.")
+      if (is.null(gene_label_type())) {
+        if (sum(rownames(raw_df) %in% gene_lengths$ID) > 0) {
+          gene_label_type("ID")
+          message("Gene label type detected: Ensembl ID")
+        } else if (sum(rownames(raw_df) %in% gene_lengths$Symbol) > 0) {
+          gene_label_type("Symbol")
+          message("Gene label type detected: Gene Symbol")
+        } else {
+          stop("No overlap found with Ensembl IDs or gene symbols in the annotation.")
+        }
       }
-    }
 
-    raw_df <- raw_df[rowSums(is.na(raw_df)) == 0, , drop = FALSE]
-    message("Genes with missing values removed: ", nrow(raw_df), " genes remaining.")
+      if (gene_label_type() == "ID") {
+        raw_df <- raw_df[rownames(raw_df) %in% gene_lengths$ID, , drop = FALSE]
+        message("Filtered by Ensembl ID: ", nrow(raw_df), " genes retained.")
+      } else {
+        raw_df <- raw_df[rownames(raw_df) %in% gene_lengths$Symbol, , drop = FALSE]
+        message("Filtered by gene symbol: ", nrow(raw_df), " genes retained.")
+      }
 
-    raw_df <- raw_df[, colnames(raw_df) %in% colData()$Sample_ID, drop = FALSE]
-    message("Samples matched to metadata: ", ncol(raw_df), " samples.")
+      raw_df <- raw_df[rowSums(is.na(raw_df)) == 0, , drop = FALSE]
+      message("Genes with missing values removed: ", nrow(raw_df), " genes remaining.")
 
-    return(raw_df)
-  })
+      raw_df <- raw_df[, colnames(raw_df) %in% colData()$Sample_ID, drop = FALSE]
+      message("Samples matched to metadata: ", ncol(raw_df), " samples.")
+
+      return(raw_df)
+    })
 
     output$filter_options <- renderUI({
       req(meta_data_reactive())
@@ -124,7 +131,8 @@ mod_step4_server <- function(
 
     return(list(
       colData = colData,
-      countData = countData
+      countData = countData,
+      gene_label_type = gene_label_type
     ))
   })
 }

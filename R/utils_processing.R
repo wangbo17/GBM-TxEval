@@ -1,54 +1,40 @@
 # R/utils_processing.R
 
 # Function to calculate FPKM values
-calculate_fpkm <- function(countData, gene_lengths) {
+calculate_fpkm <- function(countData, gene_lengths, gene_label_type) {
   gene_ids <- rownames(countData)
 
-  id_idx <- match(gene_ids, gene_lengths$ID)
-  symbol_idx <- match(gene_ids, gene_lengths$Symbol)
+  gene_column <- if (gene_label_type == "Symbol") "Symbol" else "ID"
 
-  id_overlap <- sum(!is.na(id_idx))
-  symbol_overlap <- sum(!is.na(symbol_idx))
+  idx <- match(gene_ids, gene_lengths[[gene_column]])
 
-  if (id_overlap > symbol_overlap && id_overlap > 0) {
-    matched_gene_lengths <- gene_lengths[id_idx, ]
-  } else if (symbol_overlap > 0) {
-    matched_gene_lengths <- gene_lengths[symbol_idx, ]
-  } else {
-    stop("No overlap with gene IDs or symbols.")
-  }
-
+  matched_gene_lengths <- gene_lengths[idx, ]
   gene_lengths_kb <- matched_gene_lengths$Length / 1000
+
   total_counts <- colSums(countData)
   fpkm_values <- sweep(countData, 1, gene_lengths_kb, FUN = "/")
   fpkm_values <- sweep(fpkm_values, 2, total_counts / 1e6, FUN = "/")
+  
   return(fpkm_values)
 }
 
 # Function to calculate TPM values
-calculate_tpm <- function(countData, gene_lengths) {
+calculate_tpm <- function(countData, gene_lengths, gene_label_type) {
   gene_ids <- rownames(countData)
 
-  id_idx <- match(gene_ids, gene_lengths$ID)
-  symbol_idx <- match(gene_ids, gene_lengths$Symbol)
+  gene_column <- if (gene_label_type == "Symbol") "Symbol" else "ID"
 
-  id_overlap <- sum(!is.na(id_idx))
-  symbol_overlap <- sum(!is.na(symbol_idx))
+  idx <- match(gene_ids, gene_lengths[[gene_column]])
 
-  if (id_overlap > symbol_overlap && id_overlap > 0) {
-    matched_gene_lengths <- gene_lengths[id_idx, ]
-  } else if (symbol_overlap > 0) {
-    matched_gene_lengths <- gene_lengths[symbol_idx, ]
-  } else {
-    stop("No overlap with gene IDs or symbols.")
-  }
-
+  matched_gene_lengths <- gene_lengths[idx, ]
   gene_lengths_kb <- matched_gene_lengths$Length / 1000
+
   rpk <- sweep(countData, 1, gene_lengths_kb, FUN = "/")
-  tpm <- sweep(rpk, 2, colSums(rpk, na.rm = TRUE) / 1e6, FUN = "/")
+  scaling_factors <- colSums(rpk, na.rm = TRUE) / 1e6
+  tpm <- sweep(rpk, 2, scaling_factors, FUN = "/")
+  
   return(tpm)
 }
-
 
 # Function to normalize condition labels
 normalize_condition <- function(cond) {
