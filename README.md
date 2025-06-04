@@ -108,7 +108,7 @@ Once filters are applied:
 
 ### Step 5: Process Data
 
-In this step, GBM-TxEval performs core analytical operations including **expression normalization**, **low-expression filtering**, **log2 fold change calculation**, **PC1 score projection**, and **gene set enrichment analysis (GSEA)**.
+In this step, GBM-TxEval performs core analytical operations including **expression normalization**, **low-expression filtering**, **log2 fold change calculation**, **PC1 score projection**, and **gene set enrichment analysis (GSEA)**. The overall analytical framework follows the strategy described in [Tanner *et al.*, *Genome Biology* 2024](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03172-3).
 
 ![image](https://github.com/user-attachments/assets/1a3a9ce8-66a9-4b42-a5b5-46b5155c0da1)
 
