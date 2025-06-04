@@ -40,8 +40,25 @@ if (!requireNamespace("plotly", quietly = TRUE)) {
 }
 library(plotly)
 
+# shinyjs
+if (!requireNamespace("shinyjs", quietly = TRUE)) {
+  install.packages("shinyjs", dependencies = TRUE)
+}
+library(shinyjs)
+
 # ==== Global Options ====
 options(shiny.maxRequestSize = 500 * 1024^2)
+
+options(shiny.error = function(e = NULL) {
+  if (!is.null(e)) {
+    cat("Shiny error occurred:\n")
+    print(e)
+  }
+  shinyjs::runjs("
+    alert('❌ Critical error detected. Restarting application.');
+    location.reload();
+  ")
+})
 
 # ==== Load Reference Data ====
 gene_lengths <- read.csv("data/gencode_v27.csv")

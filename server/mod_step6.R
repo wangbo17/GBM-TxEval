@@ -7,6 +7,21 @@ mod_step6_server <- function(id, processed_data, colData, extra_info_columns) {
     observeEvent(input$start_plotting, {
       req(processed_data(), colData())
 
+      shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.display = 'block';
+          blocker.style.pointerEvents = 'auto';
+        }
+      ")
+      on.exit(shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.pointerEvents = 'none';
+          blocker.style.display = 'none';
+        }
+      "), add = TRUE)
+
       withProgress(message = "Generating Plot", value = 0, {
         incProgress(0.3, detail = "Preparing data...")
 

@@ -2,70 +2,86 @@
 
 ui <- fluidPage(
   theme = my_theme,
-  
-  tags$head(tags$style(HTML("
-    body {
-      font-family: '-apple-system', 'BlinkMacSystemFont', 'sans-serif';
-      background-color: #F5F5F7;
-      color: #1D1D1F;
-    }
-    h1 { font-weight: bold; color: #1D1D1F; }
-    h4 { font-style: italic; color: #6E6E73; }
-    .shiny-input-container .form-control {
-      height: 38px;
-      border-radius: 8px;
-      border: 1px solid #D1D1D6;
-      box-shadow: none;
-      background-color: white;
-    }
-    .btn-secondary, .btn-primary {
-      background: #2C2C2E;
-      color: white;
-      border: none;
-      box-shadow: none;
-      border-radius: 8px;
-    }
-    .btn-secondary:hover, .btn-primary:hover {
-      background: #3A3A3C;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    .btn-processing {
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #0066cc, #005bb5);
-      border: none;
-      color: white;
-      font-weight: 500;
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .btn-processing:hover {
-      background: linear-gradient(90deg, #005bb5, #004a99);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-      transform: translateY(-2px);
-    }
-    .btn-plot {
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #bb5112, #a4470f);
-      border: none;
-      color: white;
-      font-weight: 500;
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .btn-plot:hover {
-      background: linear-gradient(90deg, #a4470f, #8c390d);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-      transform: translateY(-2px);
-    }
-  "))),
+
+  shinyjs::useShinyjs(),
+
+  tags$head(
+    tags$style(HTML("
+      #mouse-blocker {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background-color: rgba(255, 255, 255, 0);
+        z-index: 9999;
+        pointer-events: none;
+        display: none;
+      }
+
+      body {
+        font-family: '-apple-system', 'BlinkMacSystemFont', 'sans-serif';
+        background-color: #F5F5F7;
+        color: #1D1D1F;
+      }
+      h1 { font-weight: bold; color: #1D1D1F; }
+      h4 { font-style: italic; color: #6E6E73; }
+      .shiny-input-container .form-control {
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid #D1D1D6;
+        box-shadow: none;
+        background-color: white;
+      }
+      .btn-secondary, .btn-primary {
+        background: #2C2C2E;
+        color: white;
+        border: none;
+        box-shadow: none;
+        border-radius: 8px;
+      }
+      .btn-secondary:hover, .btn-primary:hover {
+        background: #3A3A3C;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .btn-processing {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #0066cc, #005bb5);
+        border: none;
+        color: white;
+        font-weight: 500;
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .btn-processing:hover {
+        background: linear-gradient(90deg, #005bb5, #004a99);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+      }
+      .btn-plot {
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #bb5112, #a4470f);
+        border: none;
+        color: white;
+        font-weight: 500;
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .btn-plot:hover {
+        background: linear-gradient(90deg, #a4470f, #8c390d);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+      }
+    "))
+  ),
+
+  div(id = "mouse-blocker"),
 
   titlePanel(
     div(

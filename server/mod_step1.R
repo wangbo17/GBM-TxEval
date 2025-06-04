@@ -7,6 +7,7 @@ mod_step1_server <- function(id) {
     meta_data <- reactiveVal(NULL)
     raw_data <- reactiveVal(NULL)
     expr_type <- reactiveVal(NULL)
+    auto_expr_type <- reactiveVal(NULL)
 
     upload_statuses <- reactiveValues(meta = NULL, raw = NULL)
 
@@ -17,9 +18,7 @@ mod_step1_server <- function(id) {
       numeric_values <- unlist(expr_matrix)
       numeric_values <- numeric_values[!is.na(numeric_values)]
 
-      if (all(numeric_values %% 1 == 0, na.rm = TRUE)) {
-        return("Counts")
-      }
+      if (all(numeric_values %% 1 == 0, na.rm = TRUE)) return("Counts")
 
       non_zero_values <- numeric_values[numeric_values != 0]
       non_integer_ratio <- mean(non_zero_values %% 1 != 0)
@@ -27,19 +26,14 @@ mod_step1_server <- function(id) {
       max_val <- max(numeric_values)
       min_val <- min(numeric_values)
 
-      if (non_integer_ratio > 0.05 && non_integer_ratio < 0.8 && max_val < 2e4 && min_val >= 0) {
+      if (non_integer_ratio > 0.05 && non_integer_ratio < 0.8 && max_val < 2e4 && min_val >= 0)
         return("Counts")
-      }
-
-      if (non_integer_ratio > 0.8 && max_val > 1e4 && min_val >= 0) {
+      if (non_integer_ratio > 0.8 && max_val > 1e4 && min_val >= 0)
         return("FPKM")
-      }
 
       sample_cols <- sample(ncol(expr_matrix), min(sample_n, ncol(expr_matrix)))
       col_sums <- colSums(expr_matrix[, sample_cols, drop = FALSE], na.rm = TRUE)
-      if (all(abs(col_sums - 1e6) < tolerance)) {
-        return("TPM")
-      }
+      if (all(abs(col_sums - 1e6) < tolerance)) return("TPM")
 
       return("Unknown")
     }
@@ -53,6 +47,21 @@ mod_step1_server <- function(id) {
     }
 
     observeEvent(input$meta_file, {
+      shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.display = 'block';
+          blocker.style.pointerEvents = 'auto';
+        }
+      ")
+      on.exit(shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.pointerEvents = 'none';
+          blocker.style.display = 'none';
+        }
+      "), add = TRUE)
+
       df <- load_csv(input$meta_file, label = "Metadata File")
       if (is.null(df)) {
         upload_statuses$meta <- "❌ Metadata upload failed. Please check the file format."
@@ -64,6 +73,21 @@ mod_step1_server <- function(id) {
     })
 
     observeEvent(input$raw_data_file, {
+      shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.display = 'block';
+          blocker.style.pointerEvents = 'auto';
+        }
+      ")
+      on.exit(shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.pointerEvents = 'none';
+          blocker.style.display = 'none';
+        }
+      "), add = TRUE)
+
       df <- load_csv(input$raw_data_file, label = "Expression Matrix")
       if (is.null(df)) {
         upload_statuses$raw <- "❌ Gene expression matrix upload failed. Please check the file format."
@@ -79,6 +103,7 @@ mod_step1_server <- function(id) {
           incProgress(1)
         })
 
+        auto_expr_type(auto_mode)
         expr_type(auto_mode)
 
         updateSelectInput(session, "manual_expr_type",
@@ -107,10 +132,14 @@ mod_step1_server <- function(id) {
       current_raw <- raw_data()
       if (is.null(current_raw)) return()
 
-      expr_matrix <- current_raw[, -1, drop = FALSE]
-      auto_mode <- guess_expression_type(expr_matrix)
-      final_mode <- if (input$manual_expr_type != "Auto") input$manual_expr_type else auto_mode
+      auto_mode <- auto_expr_type()
+      if (is.null(auto_mode)) {
+        expr_matrix <- current_raw[, -1, drop = FALSE]
+        auto_mode <- guess_expression_type(expr_matrix)  # fallback
+        auto_expr_type(auto_mode)
+      }
 
+      final_mode <- if (input$manual_expr_type != "Auto") input$manual_expr_type else auto_mode
       expr_type(final_mode)
 
       base_msg <- switch(auto_mode,

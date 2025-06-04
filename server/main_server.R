@@ -91,4 +91,24 @@ server <- function(input, output, session) {
     )
 
   mod_footer_server("footer")
+
+  show_mouse_blocker <- function() {
+    shinyjs::runjs("
+      const blocker = document.getElementById('mouse-blocker');
+      if (blocker) {
+        blocker.style.display = 'block';
+        blocker.style.pointerEvents = 'auto';
+      }
+    ")
+  }
+
+  hide_mouse_blocker <- function() {
+    shinyjs::runjs("
+      const blocker = document.getElementById('mouse-blocker');
+      if (blocker) {
+        blocker.style.pointerEvents = 'none';
+        blocker.style.display = 'none';
+      }
+    ")
+  }
 }

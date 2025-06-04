@@ -11,4 +11,5 @@ source("ui/main_ui.R")
 source("server/main_server.R")
 
 # Launch the Shiny application
+options(shiny.launch.browser = TRUE)
 shinyApp(ui = ui, server = server)

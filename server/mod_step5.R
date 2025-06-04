@@ -119,6 +119,21 @@ mod_step5_server <- function(
     observeEvent(input$start_processing, {
       req(colData(), countData())
 
+      shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.display = 'block';
+          blocker.style.pointerEvents = 'auto';
+        }
+      ")
+      on.exit(shinyjs::runjs("
+        const blocker = document.getElementById('mouse-blocker');
+        if (blocker) {
+          blocker.style.pointerEvents = 'none';
+          blocker.style.display = 'none';
+        }
+      "), add = TRUE)
+      
       gene_set <- switch(input$gene_set_choice,
         "symbol" = gmt_data_symbol,
         "ensembl" = gmt_data,

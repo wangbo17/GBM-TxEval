@@ -157,7 +157,7 @@ This PC1 score captures the principal axis of transcriptional variation observed
 
 #### 🧬 Gene Set Enrichment Analysis
 
-To evaluate transcriptional programs affected by treatment, GBM-TxEval performs **Gene Set Enrichment Analysis (GSEA)** using the FGSEA algorithm. For each donor, normalized log2FC values are ranked and used as input for enrichment testing against a predefined gene set (e.g., **JARID2 target genes**).
+To evaluate transcriptional programs affected by treatment, GBM-TxEval performs **Gene Set Enrichment Analysis (GSEA)** using the FGSEA algorithm. For each donor, log2FC values are ranked and used as input for enrichment testing against a predefined gene set (**JARID2 target genes**).
 
 The gene ranking is performed as follows:
 
@@ -233,4 +233,3 @@ The resulting interactive plot can be downloaded for presentation or publication
 ## 🧠 Author & Acknowledgements
 
 **Developer**: Bo Wang
-**Affiliation**: University of Leeds
