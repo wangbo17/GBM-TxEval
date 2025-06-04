@@ -157,8 +157,6 @@ Specifically:
 
 - A reference **PC1 rotation vector** (PCA loadings) is **precomputed from a cohort-wide log2FC matrix** derived from paired primary and recurrent glioblastoma bulk RNA-seq data.
 
-- The PCA was performed on the **entire transcriptome**, independent of any specific gene set (e.g., JARID2), following the strategy described in [Tanner *et al.*, *Genome Biology* 2024](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03172-3).
-
 - For each donor, their log2FC vector is **centered** and projected onto the PC1 axis using the formula:
 
   ```
