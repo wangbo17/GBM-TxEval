@@ -86,13 +86,25 @@ ui <- fluidPage(
   titlePanel(
     div(
       HTML("
-        <div style='display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; margin-bottom: 5px; padding-top: 10px;'>
-          <h1 style='margin: 0;'>&#129504; GBM-TxEval</h1>
-          <h4 style='margin: 0; font-style: italic; font-weight: normal; font-size: 18px;'>Glioblastoma Treatment Response Evaluation</h4>
+        <div style='display: flex; justify-content: space-between; align-items: flex-end; margin: 0; padding: 0; margin-bottom: 5px;'>
+          
+          <!-- Logo -->
+          <div>
+            <img src='https://raw.githubusercontent.com/wangbo17/GBM-TxEval/refs/heads/main/app_logo.svg' height='150' alt='Logo' />
+          </div>
+          
+          <!-- Right-side text block -->
+          <div style='display: flex; flex-direction: column; align-items: flex-end;'>
+            <div style='font-style: italic; font-weight: normal; font-size: 18px; margin-bottom: 4px;'>
+              Glioblastoma Treatment Response Evaluation
+            </div>
+            <div style='font-size: 14px; color: #666; margin-bottom: 5px;'>
+              Author: Bo Wang | Version: Beta
+            </div>
+          </div>
+          
         </div>
-      "),
-      HTML("<p style='text-align: right; margin: 2px; font-size: 14px; color: #666;'>
-        Author: Bo Wang | Version: Beta</p>")
+      ")
     )
   ),
 
