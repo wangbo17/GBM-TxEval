@@ -1,4 +1,13 @@
-# GBM-TxEval
+![logo2](https://github.com/user-attachments/assets/d9c5c612-7efc-4da9-975b-73479fff35e1)
+
+<p align="center">
+  <img src="https://img.shields.io/badge/R-4.3.2%2B-blue" />
+  <img src="https://img.shields.io/badge/License-MIT-green" />
+  <img src="https://img.shields.io/badge/Status-Beta-orange" />
+  <img src="https://img.shields.io/github/last-commit/wangbo17/GBM-TxEval" />
+</p>
+
+# Overview
 
 GBM-TxEval is a computational tool designed to evaluate transcriptional treatment responses in glioblastoma (GBM). It processes longitudinal gene expression data to calculate therapy-induced log2 fold changes, performs gene set enrichment analysis, and projects the results into principal component space. This enables stratification of samples into "Up" and "Down" responder subtypes, supporting the investigation of resistance mechanisms and selection of optimal models for preclinical drug evaluation.
 
@@ -19,7 +28,7 @@ The analysis pipeline is divided into six modular steps:
 
 The first step involves uploading two input files in CSV format: **sample metadata** and a **gene expression matrix**. These inputs are essential for downstream processing and must conform to specific format requirements.
 
-![image](https://github.com/user-attachments/assets/4b204285-4b04-4720-a757-3ea18efaa6d4)
+![image](https://github.com/user-attachments/assets/296a13de-b583-4e3e-9005-60b184169e16)
 
 #### 📋 Sample Metadata
 
@@ -67,7 +76,7 @@ This step ensures proper alignment between the sample metadata and the expressio
 - `Model`
 - `Condition` (e.g., untreated vs. treated)
 
-![image](https://github.com/user-attachments/assets/61a77916-7639-4186-bb97-0ded4cab102f)
+![image](https://github.com/user-attachments/assets/98f80349-a7dd-4848-9b87-c19b4c66c254)
 
 Users can also specify any number of **optional metadata columns** (referred to as "extra information"). These columns may include additional contextual details such as sample origin, treatment regimen, or sequencing batch. Selected extra information columns will:
 
@@ -85,7 +94,7 @@ This step allows users to define one or more metadata-based **filtering conditio
 - **Zero or more filtering variables** may be selected.
 - Filtering columns may be categorical or numeric; however, filtering operates via explicit selection of value levels.
 
-![image](https://github.com/user-attachments/assets/3ca52516-810f-4ac5-bcba-6b9f45f2ddfe)
+![image](https://github.com/user-attachments/assets/d6269949-618b-4fe0-8749-f0bcf682dd0a)
 
 This design supports flexible sample selection for downstream analysis while allowing fine-grained control over cohort composition.
 
@@ -95,7 +104,7 @@ This design supports flexible sample selection for downstream analysis while all
 
 In this step, users specify which values within each selected filtering column should be retained. Filtering is performed using **checkbox selection**, where each level in a column can be toggled independently.
 
-![image](https://github.com/user-attachments/assets/31f5bf19-c007-4133-aa43-9bf3b7fb7491)
+![image](https://github.com/user-attachments/assets/7ccd3cde-adc9-455b-be33-d9d1a249f30d)
 
 > 💡 **Tip**: For numeric columns (e.g., purity scores), we recommend **creating binary classification columns** (e.g., `"HighPurity"` = TRUE/FALSE) in advance. This enables efficient selection via checkboxes and avoids the need for custom sliders.
 
@@ -110,7 +119,7 @@ Once filters are applied:
 
 In this step, GBM-TxEval performs core analytical operations including **expression normalization**, **low-expression filtering**, **log2 fold change calculation**, **PC1 score projection**, and **gene set enrichment analysis (GSEA)**. The overall analytical framework follows the strategy described in [Tanner *et al.*, *Genome Biology* 2024](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03172-3).
 
-![image](https://github.com/user-attachments/assets/1a3a9ce8-66a9-4b42-a5b5-46b5155c0da1)
+![image](https://github.com/user-attachments/assets/f5275e57-dfa3-41d5-878b-ce76961b8a7e)
 
 #### 🔬 Gene Filtering Options
 
@@ -124,7 +133,7 @@ Two gene filtering strategies are supported:
   - Retains genes expressed **above the global first quartile (Q1)** in at least a user-defined **minimum proportion** of samples (e.g., 100%, 75%, etc.).
   - Designed for experienced users needing adaptive filtering based on data distribution.
 
-![image](https://github.com/user-attachments/assets/a4bd9146-0daf-4d2a-9857-66faff09103b)
+![image](https://github.com/user-attachments/assets/bb8a20a0-605f-4108-8dac-5cc620cba4c8)
 
 #### 📐 Expression Normalization
 
@@ -135,7 +144,7 @@ The normalization method depends on the input expression type:
   - **FPKM**: Fragments Per Kilobase of transcript per Million mapped reads
   - **TPM**: Transcripts Per Million
 
-![image](https://github.com/user-attachments/assets/e44285cc-1cb2-4ca4-9fb5-1273863b1d4b)
+![image](https://github.com/user-attachments/assets/cac2f554-2db7-42e9-84b3-929fc56c1f0a)
 
 Normalization is performed using uploaded gene length information, and both TPM and FPKM are computed with consistent formulae.
 
@@ -193,7 +202,7 @@ Once the “Start Processing” button is clicked:
 - A progress bar appears, tracking analysis progress across donors.
 - The current **Donor ID** and processing index are shown in real-time (e.g., “Donor ID: D123 [3/14]”).
 
-![image](https://github.com/user-attachments/assets/4177dfee-e345-4af8-801a-b2c70600a15c)
+![image](https://github.com/user-attachments/assets/bbf7a293-4ea4-4fb7-b772-5252571ff0a1)
 
 #### 📤 Output
 
@@ -207,7 +216,7 @@ Each row in the output corresponds to a donor, containing the following columns:
 - `ES`: Enrichment Score from FGSEA (for the JARID2 pathway or selected gene set)
 - `Responder`: Binary classification of transcriptional response (`Up` if ES ≥ 0; `Down` otherwise)
 
-![image](https://github.com/user-attachments/assets/0bcd2437-e6c5-4eb5-a425-4fb2b92ee551)
+![image](https://github.com/user-attachments/assets/97020e78-323e-41a4-8997-0c0a2ccd4786)
 
 The resulting dataset serves as input for the final step: interactive visualization and interpretation.
 
@@ -217,7 +226,7 @@ The resulting dataset serves as input for the final step: interactive visualizat
 
 This final step generates an interactive scatter plot that enables intuitive exploration of transcriptional responses across donors.
 
-![image](https://github.com/user-attachments/assets/ccbeebe9-a864-4c88-a34b-52e752598939)
+![image](https://github.com/user-attachments/assets/7a2eb38b-0331-49a4-9bf8-e4c67597a9d2)
 
 #### 📈 Plot Details
 
