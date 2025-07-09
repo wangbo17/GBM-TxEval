@@ -257,6 +257,21 @@ These controls allow users to tune the visual clarity based on dataset size and 
 
 The resulting interactive plot can be downloaded for presentation or publication. Users are encouraged to annotate or further customize the exported figure using external tools as needed.
 
+## 🧩 Dependencies
+
+Tested on **R 4.3.2** with the following package versions:
+
+```
+shiny       1.11.1  
+shinyjs     2.1.0  
+plotly      4.11.0  
+ggplot2     3.5.2  
+fgsea       1.28.0  
+data.table  1.17.6  
+DT          0.33  
+bslib       0.9.0
+```
+
 ## 🧠 Author & Acknowledgements
 
 **Developer**: Bo Wang
