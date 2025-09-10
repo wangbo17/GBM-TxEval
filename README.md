@@ -275,4 +275,33 @@ bslib       0.9.0
 ## 🧠 Author & Acknowledgements
 
 **Developer**: Bo Wang
+
 **Affiliation**: University of Leeds
+
+## 📑 Supplementary Analysis
+
+This supplementary analysis extends and visualizes the core findings from [Tanner *et al.*, *Genome Biology* 2024](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-024-03172-3).  
+
+While the original study highlighted the importance of **JARID2** in stratifying glioblastoma patient responses to treatment, the updated analysis presented here broadens this focus to the wider **PRC1 and PRC2 complexes**.  
+
+Using updated RNA-seq processing and gene set annotations, we identify consistent enrichment of multiple PRC1/PRC2-related gene sets, indicating a broader polycomb involvement in patient stratification beyond JARID2.  
+
+<p align="center"><img width="593" height="492" alt="image" src="https://github.com/user-attachments/assets/b18dd546-2cdc-4432-908c-2e4b7138e705" /></p>
+
+> ✨ *The analysis and visualization shown here were independently performed by Bo Wang.* 
+
+### Bubble Plot (|log₂FC| GSEA)  
+- **Bubble size** reflects the normalized enrichment score (NES).  
+- **Colour** indicates the false discovery rate (FDR).  
+- Among all tested gene sets, **JARID2 still shows the highest NES**, consistent with earlier findings.  
+- However, the updated analysis highlights that other **PRC1- and PRC2-associated gene sets**, including **PDGFR2, CBX6, CBX7, and CBX8**, are also commonly enriched across samples.  
+- Interestingly, **CBX2**, which was previously prominent, is no longer highly significant—underscoring the impact of updated annotations and pipeline improvements.  
+
+### Heatmap (log₂FC GSEA)  
+- **Colours** represent the NES, and only the most significant gene sets from the outer bubble plot are displayed.  
+- Nearly all of these top-ranked sets are linked to **PRC1 and PRC2 complexes**, showing a broader polycomb signature beyond JARID2 alone.  
+- Sample clustering based on this heatmap clearly stratifies patients into **Up responders (red)** and **Down responders (blue)**, reinforcing the robustness of polycomb-related enrichment as a stratification marker.  
+
+### Interpretation  
+Together, these results extend the original focus on **JARID2** and suggest that a wider network of **PRC1- and PRC2-associated gene sets** may play a central role in determining glioblastoma patient responses to treatment.  
+
