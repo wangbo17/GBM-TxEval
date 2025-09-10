@@ -295,7 +295,7 @@ Using updated RNA-seq processing and gene set annotations, we identify consisten
 - **Colour** indicates the false discovery rate (FDR).  
 - Among all tested gene sets, **JARID2 still shows the highest NES**, consistent with earlier findings.  
 - However, the updated analysis highlights that other **PRC1- and PRC2-associated gene sets**, including **PDGFR2, CBX6, CBX7, and CBX8**, are also commonly enriched across samples.  
-- Interestingly, **CBX2**, which was previously prominent, is no longer highly significant—underscoring the impact of updated annotations and pipeline improvements.  
+- Interestingly, **CBX2**, which was previously prominent, is no longer highly significant.  
 
 ### Heatmap (log₂FC GSEA)  
 - **Colours** represent the NES, and only the most significant gene sets from the outer bubble plot are displayed.  
