@@ -286,9 +286,9 @@ While the original study highlighted the importance of **JARID2** in stratifying
 
 Using updated RNA-seq processing and gene set annotations, we identify consistent enrichment of multiple PRC1/PRC2-related gene sets, indicating a broader polycomb involvement in patient stratification beyond JARID2.  
 
-<p align="center"><img width="593" height="492" alt="image" src="https://github.com/user-attachments/assets/b18dd546-2cdc-4432-908c-2e4b7138e705" /></p>
+<p align="center"><img width="1386" height="895" alt="image" src="https://github.com/user-attachments/assets/5a8db1c1-d5ba-45b5-882b-492dbf40da26" /></p>
 
-> ✨ *The analysis and visualization shown here were independently performed by Bo Wang.* 
+> ✨ *The analysis and visualization shown here were performed by Bo Wang.* 
 
 ### Bubble Plot (|log₂FC| GSEA)  
 - **Bubble size** reflects the normalized enrichment score (NES).  
